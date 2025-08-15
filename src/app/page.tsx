@@ -2,6 +2,11 @@ import type { Metadata } from 'next';
 
 import { CONFIG } from 'src/config-global';
 
+import Banner from 'src/components/sections/banner';
+import AboutUs from 'src/components/sections/aboutUs';
+import ContactUs from 'src/components/sections/contactUs';
+import ServiceArea from 'src/components/sections/serviceArea';
+
 export const metadata: Metadata = {
   title: `Home | ${CONFIG.appName}`,
   description:
@@ -9,5 +14,12 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  return <div className="w-full">main page</div>;
+  return (
+    <div className="w-full">
+      <Banner />
+      <AboutUs />
+      <ServiceArea />
+      <ContactUs />
+    </div>
+  );
 }

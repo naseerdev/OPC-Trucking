@@ -6,7 +6,6 @@ interface ButtonProps {
   variant?: 'primary' | 'secondary' | 'danger' | 'dark' | 'transparent';
   size?: 'sm' | 'md' | 'lg' | 'full';
   className?: string;
-  type?: 'button' | 'submit' | 'reset';
 }
 
 const Button = ({
@@ -15,7 +14,6 @@ const Button = ({
   variant = 'primary',
   size = 'md',
   className = '',
-  type = 'button',
 }: ButtonProps) => {
   const baseClasses = 'rounded-lg font-medium transition-all cursor-pointer';
 

@@ -2,8 +2,6 @@
 
 :root {
   --background: #ffffff;
-  --font-inter: 'Inter', sans-serif;
-  --font-jura: 'Jura', sans-serif;
 }
 
 @theme inline {
@@ -53,13 +51,10 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-inter);
+  font-family: var(--font-bricolage-grotesque);
   top: 0px !important;
 }
 
-.font-jura {
-  font-family: var(--font-jura);
-}
 
 input:-internal-autofill-selected {
   background-color: #ffff !important;
