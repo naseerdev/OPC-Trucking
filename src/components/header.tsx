@@ -5,7 +5,6 @@ export default function Header() {
     <header className="flex gap-2 items-center">
       <p
         className="text-[#000]  
-  font-[Bricolage_Grotesque] 
   text-[48px] 
   not-italic 
   font-semibold 
