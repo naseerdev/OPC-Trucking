@@ -5,13 +5,12 @@ export default function Header() {
     <header className="flex gap-2 items-center">
       <p
         className="text-[#000]  
-  text-[48px] 
+  text-[32px] 
   not-italic 
   font-semibold 
-  leading-[125%] 
-  upe"
+  uppercase"
       >
-        We Make Delivers Not Promises
+        OPC Trucking
       </p>
       <Navigation />
     </header>

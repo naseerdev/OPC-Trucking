@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 
+import Header from '@/components/header';
+
 import { CONFIG } from 'src/config-global';
 
 import Banner from 'src/components/sections/banner';
@@ -9,17 +11,24 @@ import ServiceArea from 'src/components/sections/serviceArea';
 
 export const metadata: Metadata = {
   title: `Home | ${CONFIG.appName}`,
-  description:
-    'At FilterMart Corporation, we specialize in the sale of OEM and replacement filters for industrial applications. We have over 1 million cross-references in our product database and can also have custom filters built to your unique specifications.',
+  description: 'OPC Trucking',
 };
 
 export default function Home() {
   return (
-    <div className="w-full">
-      <Banner />
-      <AboutUs />
-      <ServiceArea />
-      <ContactUs />
-    </div>
+    <main>
+      <div className="sticky top-0 z-50 w-full ">
+        <div className="hidden lg:block mx-auto w-[calc(100vw-20%)]">
+          <Header />
+        </div>
+      </div>
+
+      <div className="w-full">
+        <Banner />
+        <AboutUs />
+        <ServiceArea />
+        <ContactUs />
+      </div>
+    </main>
   );
 }

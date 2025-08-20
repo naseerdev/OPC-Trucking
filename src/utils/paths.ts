@@ -13,7 +13,7 @@ export const paths = {
   },
   shipmentTracking: {
     label: 'Shipment Tracking',
-    path: 'https://www.opctrucking.net/clientportal',
+    path: '/clientportal',
   },
   contactUs: {
     label: 'Contact Us',

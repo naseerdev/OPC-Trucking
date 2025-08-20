@@ -4,7 +4,6 @@ import type { Metadata } from 'next';
 
 import { Bricolage_Grotesque } from 'next/font/google';
 
-import Header from '../components/header';
 import { getBaseURL } from '../lib/util/env';
 
 const bricolageGrotesque = Bricolage_Grotesque({
@@ -23,20 +22,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${bricolageGrotesque.variable} antialiased`}
-      suppressHydrationWarning
-    >
-      <body>
-        <div className="sticky top-0 z-50 w-full ">
-          <div className="hidden lg:block mx-auto w-[calc(100vw-20%)]">
-            <Header />
-          </div>
-        </div>
+    // <html
+    //   lang="en"
+    //   className={`${bricolageGrotesque.variable} antialiased`}
+    //   suppressHydrationWarning
+    // >
+    //   <body>
+    //     <div className="sticky top-0 z-50 w-full ">
+    //       <div className="hidden lg:block mx-auto w-[calc(100vw-20%)]">
+    //         <Header />
+    //       </div>
+    //     </div>
 
-        {children}
-      </body>
+    //     {children}
+    //   </body>
+    // </html>
+    <html lang="en" className={`${bricolageGrotesque.variable} antialiased`}>
+      <body className={`${bricolageGrotesque.variable} antialiased`}>{children}</body>
     </html>
   );
 }
