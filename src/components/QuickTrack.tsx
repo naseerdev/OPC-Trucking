@@ -40,8 +40,8 @@ export default function QuickTrack({ onTrack }: QuickTrackProps) {
   return (
     <div className="bg-white overflow-hidden shadow rounded-lg">
       <div className="px-4 py-5 sm:p-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Quick Track</h3>
-        <p className="text-gray-600 mb-6">
+        <h3 className="text-lg font-medium text-gray-900 mb-2">Quick Track</h3>
+        <p className="text-gray-900 mb-6">
           Track your order using Order Tracking ID or Client Reference Number
         </p>
 
