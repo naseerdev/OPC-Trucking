@@ -18,22 +18,42 @@ interface QuickTrackProps {
 export default function QuickTrack({ onTrack }: QuickTrackProps) {
   const [trackBy, setTrackBy] = useState<string>('');
   const [searchValue, setSearchValue] = useState<string>('');
-  const [isSearchRequired, setIsSearchRequired] = useState<boolean>(false);
+  const [errors, setErrors] = useState<{ trackBy?: string; searchValue?: string }>({});
+
+  const validateForm = () => {
+    const newErrors: { trackBy?: string; searchValue?: string } = {};
+
+    if (!trackBy) {
+      newErrors.trackBy = 'Please select a tracking method';
+    }
+
+    if (!searchValue.trim()) {
+      newErrors.searchValue = 'This field is required';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleTrack = () => {
-    if (!searchValue.trim()) {
-      setIsSearchRequired(true);
+    if (!validateForm()) {
       return;
     }
 
-    setIsSearchRequired(false);
     onTrack?.(trackBy, searchValue.trim());
+  };
+
+  const handleTrackByChange = (value: string) => {
+    setTrackBy(value);
+    if (errors.trackBy) {
+      setErrors((prev) => ({ ...prev, trackBy: undefined }));
+    }
   };
 
   const handleSearchChange = (value: string) => {
     setSearchValue(value);
-    if (value.trim()) {
-      setIsSearchRequired(false);
+    if (errors.searchValue) {
+      setErrors((prev) => ({ ...prev, searchValue: undefined }));
     }
   };
 
@@ -47,9 +67,11 @@ export default function QuickTrack({ onTrack }: QuickTrackProps) {
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <div className="block text-sm font-medium text-gray-700">Track By</div>
-            <Select value={trackBy} onValueChange={setTrackBy}>
-              <SelectTrigger className="w-full">
+            <div className="block text-sm font-medium text-gray-700">Track By *</div>
+            <Select value={trackBy} onValueChange={handleTrackByChange}>
+              <SelectTrigger
+                className={`w-full ${errors.trackBy ? 'border-red-500 focus:border-red-500' : ''}`}
+              >
                 <SelectValue placeholder="Select tracking method" />
               </SelectTrigger>
               <SelectContent>
@@ -57,6 +79,7 @@ export default function QuickTrack({ onTrack }: QuickTrackProps) {
                 <SelectItem value="client-ref-no">Client Reference Number</SelectItem>
               </SelectContent>
             </Select>
+            {errors.trackBy && <p className="text-xs text-red-600 ml-2">{errors.trackBy}</p>}
           </div>
 
           <div className="space-y-2">
@@ -80,15 +103,16 @@ export default function QuickTrack({ onTrack }: QuickTrackProps) {
               }
               value={searchValue}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className={isSearchRequired ? 'border-red-500 focus:border-red-500' : ''}
+              className={errors.searchValue ? 'border-red-500 focus:border-red-500' : ''}
             />
-            {isSearchRequired && <p className="text-sm text-red-600">This field is required</p>}
+            {errors.searchValue && (
+              <p className="text-xs text-red-600 ml-2">{errors.searchValue}</p>
+            )}
           </div>
 
           <Button
             onClick={handleTrack}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-            disabled={!trackBy || !searchValue.trim()}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
           >
             Track Order
           </Button>
