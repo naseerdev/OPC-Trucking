@@ -21,7 +21,8 @@ export default function ClientPortalLayout({
             <div className="flex items-center">
               <h1 className="text-xl font-semibold text-gray-900">OPC Trucking Client Portal</h1>
             </div>
-            <nav className="flex space-x-8">
+
+            {/* <nav className="flex space-x-8">
               <a
                 href="/clientportal"
                 className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
@@ -46,12 +47,11 @@ export default function ClientPortalLayout({
               >
                 Back to Main Site
               </a>
-            </nav>
+            </nav> */}
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">{children}</main>
     </div>
   );
