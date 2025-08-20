@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
 import { paths } from 'src/utils/paths';
@@ -32,27 +33,25 @@ export default function Navigation() {
     <div className="w-full bg-white shadow-md z-50">
       <nav className="flex justify-center space-x-8 py-4">
         {Object.entries(paths).map(([key, { label, path }]) => {
-          const isExternal = path.startsWith('http');
-
-          if (isExternal) {
+          // Handle internal page link (client-portal)
+          if (path === '/clientportal') {
             return (
-              <a
+              <Link
                 key={key}
-                href={path}
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/client-portal"
                 className="text-gray-600 hover:text-blue-600 transition"
               >
                 {label}
-              </a>
+              </Link>
             );
           }
 
+          // Handle scroll-to-section items
           const sectionId = path.replace('#', '');
           return (
-            // eslint-disable-next-line react/button-has-type
             <button
               key={key}
+              type="button"
               onClick={() => scrollToSection(sectionId)}
               className={`capitalize transition ${
                 active === sectionId
