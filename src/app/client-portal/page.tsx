@@ -1,12 +1,6 @@
-'use client';
-
 import QuickTrack from '@/components/QuickTrack';
 
 export default function ClientPortalPage() {
-  const handleTrack = (trackBy: string, searchValue: string) => {
-    console.log('Tracking initiated:', { trackBy, searchValue });
-  };
-
   return (
     <div className="space-y-6">
       <div className="bg-white overflow-hidden shadow rounded-lg">
@@ -19,7 +13,7 @@ export default function ClientPortalPage() {
         </div>
       </div>
 
-      <QuickTrack onTrack={handleTrack} />
+      <QuickTrack />
     </div>
   );
 }

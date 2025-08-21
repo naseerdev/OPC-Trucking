@@ -4,7 +4,6 @@ import * as z from 'zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
-import { quickTrackOrder } from '@/utils/api';
 import { Button } from '@/components/ui/button';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -30,11 +29,7 @@ const quickTrackSchema = z.object({
 
 type QuickTrackFormData = z.infer<typeof quickTrackSchema>;
 
-interface QuickTrackProps {
-  onTrack?: (trackBy: string, searchValue: string) => void;
-}
-
-export default function QuickTrack({ onTrack }: QuickTrackProps) {
+export default function QuickTrack() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const form = useForm<QuickTrackFormData>({
@@ -50,15 +45,32 @@ export default function QuickTrack({ onTrack }: QuickTrackProps) {
   const onSubmit = async (data: QuickTrackFormData) => {
     setIsLoading(true);
 
-    console.log('data', data);
-    try {
-      const response = await quickTrackOrder(data.trackBy, data.searchValue.trim());
-      // setResults(response.data);
-      console.log('response', response);
+    console.log('Submitting form data:', data);
 
-      onTrack?.(data.trackBy, data.searchValue.trim());
+    try {
+      const response = await fetch('/api/track-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          trackBy: data.trackBy,
+          searchValue: data.searchValue.trim(),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('API response:', result);
+
+      // TODO: Handle the response data here
+      // You can add state to display results, show success/error messages, etc.
     } catch (error: any) {
       console.error('Error tracking order:', error);
+      // TODO: Handle errors - show user-friendly error messages
     } finally {
       setIsLoading(false);
     }
