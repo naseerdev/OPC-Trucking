@@ -4,12 +4,20 @@ import QuickTrack from '@/components/QuickTrack';
 
 export default function ClientPortalPage() {
   const handleTrack = (trackBy: string, searchValue: string) => {
-    console.log('Tracking:', { trackBy, searchValue });
+    console.log('Tracking initiated:', { trackBy, searchValue });
   };
 
   return (
     <div className="space-y-6">
-      {/* Welcome Section */}
+      <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="px-4 py-5 sm:p-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome to Client Portal</h2>
+          <p className="text-gray-600">
+            Track your shipments and manage your logistics with ease. Use the Quick Track tool below
+            to find your orders.
+          </p>
+        </div>
+      </div>
 
       <QuickTrack onTrack={handleTrack} />
     </div>

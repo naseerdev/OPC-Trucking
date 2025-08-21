@@ -21,33 +21,6 @@ export default function ClientPortalLayout({
             <div className="flex items-center">
               <h1 className="text-xl font-semibold text-gray-900">OPC Trucking Client Portal</h1>
             </div>
-
-            {/* <nav className="flex space-x-8">
-              <a
-                href="/clientportal"
-                className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
-              >
-                Dashboard
-              </a>
-              <a
-                href="/clientportal/orders"
-                className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
-              >
-                Orders
-              </a>
-              <a
-                href="/clientportal/account"
-                className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
-              >
-                Account
-              </a>
-              <a
-                href="/"
-                className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
-              >
-                Back to Main Site
-              </a>
-            </nav> */}
           </div>
         </div>
       </header>
