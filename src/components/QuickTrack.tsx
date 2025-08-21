@@ -1,8 +1,10 @@
 'use client';
 
+import type { TrackingResult } from '@/types/tracking';
+
 import * as z from 'zod';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -22,6 +24,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 
+import TrackingResultsDialog from './TrackingResultsDialog';
+
 const quickTrackSchema = z.object({
   trackBy: z.string().min(1, 'Please select a tracking method'),
   searchValue: z.string().min(1, 'This field is required'),
@@ -31,6 +35,14 @@ type QuickTrackFormData = z.infer<typeof quickTrackSchema>;
 
 export default function QuickTrack() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [trackingResult, setTrackingResult] = useState<TrackingResult | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const form = useForm<QuickTrackFormData>({
     resolver: zodResolver(quickTrackSchema),
@@ -44,6 +56,8 @@ export default function QuickTrack() {
 
   const onSubmit = async (data: QuickTrackFormData) => {
     setIsLoading(true);
+    setApiError(null);
+    setTrackingResult(null);
 
     console.log('Submitting form data:', data);
 
@@ -66,15 +80,43 @@ export default function QuickTrack() {
       const result = await response.json();
       console.log('API response:', result);
 
-      // TODO: Handle the response data here
-      // You can add state to display results, show success/error messages, etc.
+      if (result.error) {
+        setApiError(result.error);
+      } else {
+        setTrackingResult(result);
+        setIsDialogOpen(true);
+      }
     } catch (error: any) {
       console.error('Error tracking order:', error);
-      // TODO: Handle errors - show user-friendly error messages
+      setApiError(error.message || 'An error occurred while tracking your order');
     } finally {
       setIsLoading(false);
     }
   };
+
+  const closeDialog = () => {
+    setIsDialogOpen(false);
+    setTrackingResult(null);
+  };
+
+  // Don't render until client-side to prevent hydration mismatch
+  if (!isClient) {
+    return (
+      <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="px-4 py-5 sm:p-6">
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Quick Track</h3>
+          <p className="text-[#60758a] mb-6">
+            Track your order using Order Tracking ID or Client Reference Number
+          </p>
+          <div className="animate-pulse space-y-4">
+            <div className="h-10 bg-gray-200 rounded" />
+            <div className="h-10 bg-gray-200 rounded" />
+            <div className="h-10 bg-gray-200 rounded" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white overflow-hidden shadow rounded-lg">
@@ -148,45 +190,17 @@ export default function QuickTrack() {
           </form>
         </Form>
 
-        {/* 
         {apiError && (
           <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
             <p className="text-sm text-red-600">{apiError}</p>
           </div>
-        )} */}
+        )}
 
-        {/* Results Display */}
-        {/* {results.length > 0 && (
-          <div className="mt-6">
-            <h4 className="text-md font-medium text-gray-900 mb-3">Tracking Results</h4>
-            <div className="space-y-3">
-              {results.map((shipment) => (
-                <div key={shipment.id} className="p-4 border border-gray-200 rounded-lg bg-gray-50">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="font-medium text-gray-900">
-                        {trackBy === 'order-tracking-id'
-                          ? `Tracking ID: ${shipment.trackingNumber || 'N/A'}`
-                          : `Reference: ${shipment.clientReferenceNumber || 'N/A'}`}
-                      </p>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Status: {shipment.status || 'Unknown'}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )} */}
-
-        {/* {results?.length === 0 && !isLoading && form.watch('searchValue')?.trim() && trackBy && (
-          <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-            <p className="text-sm text-yellow-600">
-              No shipments found matching your search criteria. Please try a different search term.
-            </p>
-          </div>
-        )} */}
+        <TrackingResultsDialog
+          isOpen={isDialogOpen}
+          onClose={closeDialog}
+          trackingResult={trackingResult}
+        />
       </div>
     </div>
   );
