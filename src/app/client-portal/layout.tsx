@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 
+import Link from 'next/link';
+
 import { getBaseURL } from '../../lib/util/env';
 
 export const metadata: Metadata = {
@@ -19,7 +21,9 @@ export default function ClientPortalLayout({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <h1 className="text-xl font-semibold text-gray-900">OPC Trucking Client Portal</h1>
+              <h1 className="text-xl font-semibold text-gray-900">
+                <Link href="/">OPC Trucking Client Portal</Link>
+              </h1>
             </div>
           </div>
         </div>
