@@ -227,7 +227,7 @@ export default function QuickTrack() {
             <div className="flex space-x-3">
               <Button
                 type="submit"
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                className=" bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
                 disabled={isLoading}
               >
                 {isLoading ? (
