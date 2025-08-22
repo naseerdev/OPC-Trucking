@@ -1,13 +1,15 @@
 'use client';
 
-import type { TrackingResult } from '@/types/tracking';
+import type { ErrorState } from '@/types/global';
+import type { TrackingError, TrackingResult } from '@/types/tracking';
 
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
-import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRef, useState, useEffect, useCallback } from 'react';
+import { Info, XCircle, RefreshCw, AlertCircle } from 'lucide-react';
 import {
   Select,
   SelectItem,
@@ -25,6 +27,7 @@ import {
 } from '@/components/ui/form';
 
 import TrackingResultsDialog from './TrackingResultsDialog';
+import ApiErrorHandler, { type ApiErrorHandlerRef } from './helpers/apiError';
 
 const quickTrackSchema = z.object({
   trackBy: z.string().min(1, 'Please select a tracking method'),
@@ -37,8 +40,9 @@ export default function QuickTrack() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [trackingResult, setTrackingResult] = useState<TrackingResult | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-  const [apiError, setApiError] = useState<string | null>(null);
+  const [errorState, setErrorState] = useState<ErrorState | null>(null);
   const [isClient, setIsClient] = useState<boolean>(false);
+  const errorHandlerRef = useRef<ApiErrorHandlerRef>(null);
 
   useEffect(() => {
     setIsClient(true);
@@ -46,6 +50,7 @@ export default function QuickTrack() {
 
   const form = useForm<QuickTrackFormData>({
     resolver: zodResolver(quickTrackSchema),
+
     defaultValues: {
       trackBy: '',
       searchValue: '',
@@ -54,12 +59,16 @@ export default function QuickTrack() {
 
   const trackBy = form.watch('trackBy');
 
+  const handleInputChange = useCallback(() => {
+    if (errorState) {
+      setErrorState(null);
+    }
+  }, [errorState]);
+
   const onSubmit = async (data: QuickTrackFormData) => {
     setIsLoading(true);
-    setApiError(null);
+    setErrorState(null);
     setTrackingResult(null);
-
-    console.log('Submitting form data:', data);
 
     try {
       const response = await fetch('/api/track-order', {
@@ -68,27 +77,31 @@ export default function QuickTrack() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          trackBy: data.trackBy,
           searchValue: data.searchValue.trim(),
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       const result = await response.json();
-      console.log('API response:', result);
 
-      if (result.error) {
-        setApiError(result.error);
-      } else {
-        setTrackingResult(result);
+      if (result.success && result.data) {
+        setTrackingResult(result.data);
         setIsDialogOpen(true);
+        setErrorState(null);
+      } else if (result.error) {
+        errorHandlerRef.current?.handleApiError(result.error);
+      } else {
+        throw new Error('Invalid response format from server');
       }
     } catch (error: any) {
-      console.error('Error tracking order:', error);
-      setApiError(error.message || 'An error occurred while tracking your order');
+      const networkError: TrackingError = {
+        type: 'NETWORK',
+        message: 'Failed to connect to tracking service',
+        code: 'NETWORK_ERROR',
+        details: error.message,
+        retryable: true,
+        timestamp: new Date().toISOString(),
+      };
+      errorHandlerRef.current?.handleApiError(networkError);
     } finally {
       setIsLoading(false);
     }
@@ -99,7 +112,32 @@ export default function QuickTrack() {
     setTrackingResult(null);
   };
 
-  // Don't render until client-side to prevent hydration mismatch
+  const getErrorIcon = (type: ErrorState['type']) => {
+    switch (type) {
+      case 'error':
+        return <XCircle className="h-5 w-5 text-red-500" />;
+      case 'warning':
+        return <AlertCircle className="h-5 w-5 text-yellow-500" />;
+      case 'info':
+        return <Info className="h-5 w-5 text-blue-500" />;
+      default:
+        return <XCircle className="h-5 w-5 text-red-500" />;
+    }
+  };
+
+  const getErrorStyling = (type: ErrorState['type']) => {
+    switch (type) {
+      case 'error':
+        return 'bg-red-50 border-red-200 text-red-800';
+      case 'warning':
+        return 'bg-yellow-50 border-yellow-200 text-yellow-800';
+      case 'info':
+        return 'bg-blue-50 border-blue-200 text-blue-800';
+      default:
+        return 'bg-red-50 border-red-200 text-red-800';
+    }
+  };
+
   if (!isClient) {
     return (
       <div className="bg-white overflow-hidden shadow rounded-lg">
@@ -134,12 +172,14 @@ export default function QuickTrack() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium text-gray-900">Track By *</FormLabel>
+
                   <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select tracking method" />
                       </SelectTrigger>
                     </FormControl>
+
                     <SelectContent>
                       <SelectItem value="order-tracking-id">Order Tracking ID</SelectItem>
                       <SelectItem value="client-ref-no">Client Reference Number</SelectItem>
@@ -173,6 +213,10 @@ export default function QuickTrack() {
                             : 'Enter search value'
                       }
                       {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        handleInputChange();
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -180,27 +224,55 @@ export default function QuickTrack() {
               )}
             />
 
-            <Button
-              type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Tracking...' : 'Track Order'}
-            </Button>
+            <div className="flex space-x-3">
+              <Button
+                type="submit"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                    Tracking...
+                  </>
+                ) : (
+                  'Track Order'
+                )}
+              </Button>
+            </div>
           </form>
         </Form>
 
-        {apiError && (
-          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-sm text-red-600">{apiError}</p>
+        {errorState && (
+          <div className={`mt-4 p-4 border rounded-md ${getErrorStyling(errorState.type)}`}>
+            <div className="flex items-start space-x-3">
+              {getErrorIcon(errorState.type)}
+              <div className="flex-1">
+                <p className="text-sm font-medium">{errorState.message}</p>
+                {errorState.code && (
+                  <p className="text-xs mt-1 opacity-75">Error Code: {errorState.code}</p>
+                )}
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setErrorState(null)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <XCircle className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         )}
 
         <TrackingResultsDialog
-          isOpen={isDialogOpen}
+          isOpen={isDialogOpen && !!trackingResult?.totalResults && trackingResult.totalResults > 0}
           onClose={closeDialog}
           trackingResult={trackingResult}
         />
+
+        <ApiErrorHandler ref={errorHandlerRef} onError={setErrorState} />
       </div>
     </div>
   );

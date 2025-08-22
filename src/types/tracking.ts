@@ -8,6 +8,10 @@ export interface TrackingResult {
   };
   error?: string;
   detailsError?: string;
+  success?: boolean;
+  errorCode?: string;
+  errorDetails?: string;
+  timestamp?: string;
 }
 
 export interface Summary {
@@ -171,4 +175,35 @@ export interface ShipmentDetails {
   showStatusCodeComment: boolean;
   showStatusCodeTime: boolean;
   driverPhotos: any | null;
+}
+
+export interface ApiError {
+  message: string;
+  code: string;
+  details?: string;
+  timestamp: string;
+  statusCode: number;
+}
+
+export interface TrackingError {
+  type: 'VALIDATION' | 'API' | 'NETWORK' | 'NOT_FOUND' | 'SERVER' | 'UNKNOWN';
+  message: string;
+  code: string;
+  details?: string;
+  retryable: boolean;
+  timestamp: string;
+}
+
+export interface ValidationError {
+  field: string;
+  message: string;
+  value?: string;
+}
+
+export interface ApiResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: TrackingError;
+  message?: string;
+  timestamp: string;
 }
