@@ -45,14 +45,14 @@ export default function TrackingResultsDialog({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
                       {summary.id && (
                         <div>
-                          <p className="text-sm text-gray-500 mb-1">ID:</p>
+                          <p className="text-sm text-gray-900 mb-1">ID:</p>
                           <p className="font-semibold text-gray-800">{summary.id}</p>
                         </div>
                       )}
 
                       {summary.reference1 && (
                         <div>
-                          <p className="text-sm text-gray-500 mb-1">Reference:</p>
+                          <p className="text-sm text-gray-900 mb-1">Reference:</p>
                           <p className="font-semibold text-gray-800">{summary.reference1}</p>
                         </div>
                       )}
@@ -63,14 +63,14 @@ export default function TrackingResultsDialog({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
                       {summary.typeDescription && (
                         <div>
-                          <p className="text-sm text-gray-500 mb-1">Stop Type:</p>
+                          <p className="text-sm text-gray-900 mb-1">Stop Type:</p>
                           <p className="font-semibold text-gray-800">{summary.typeDescription}</p>
                         </div>
                       )}
 
                       {summary.arrivalTime && (
                         <div>
-                          <p className="text-sm text-gray-500 mb-1">Date:</p>
+                          <p className="text-sm text-gray-900 mb-1">Date:</p>
                           <p className="font-semibold text-gray-800">
                             {summary.arrivalTime.formattedDate}
                           </p>
@@ -79,7 +79,7 @@ export default function TrackingResultsDialog({
 
                       {summary.arrivalTime && (
                         <div>
-                          <p className="text-sm text-gray-500 mb-1">Time:</p>
+                          <p className="text-sm text-gray-900 mb-1">Time:</p>
                           <p className="font-semibold text-gray-800">
                             {summary.arrivalTime.formattedTime}{' '}
                             {summary.arrivalTime.timeZone && `(${summary.arrivalTime.timeZone})`}
@@ -89,7 +89,7 @@ export default function TrackingResultsDialog({
 
                       {summary.destination && (
                         <div>
-                          <p className="text-sm text-gray-500 mb-1">Address:</p>
+                          <p className="text-sm text-gray-900 mb-1">Address:</p>
                           <p className="font-semibold text-gray-800">
                             {summary.destination.city}, {summary.destination.state}{' '}
                             {summary.destination.zip}
@@ -104,7 +104,7 @@ export default function TrackingResultsDialog({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
                       {trackingResult?.details?.createdBy && (
                         <div>
-                          <p className="text-sm text-gray-500 mb-1">Assigned By:</p>
+                          <p className="text-sm text-gray-900 mb-1">Assigned By:</p>
                           <p className="font-semibold text-gray-800">
                             {trackingResult.details.createdBy}
                           </p>
@@ -113,7 +113,7 @@ export default function TrackingResultsDialog({
 
                       {trackingResult?.details?.pod && (
                         <div>
-                          <p className="text-sm text-gray-500 mb-1">Proof of Delivery:</p>
+                          <p className="text-sm text-gray-900 mb-1">Proof of Delivery:</p>
                           <p className="font-semibold text-gray-800">
                             {trackingResult.details.pod}
                           </p>
@@ -121,7 +121,7 @@ export default function TrackingResultsDialog({
                       )}
 
                       <div className="md:col-span-2">
-                        <p className="text-sm text-gray-500 mb-1">Barcode Number:</p>
+                        <p className="text-sm text-gray-900 mb-1">Barcode Number:</p>
                         <p className="font-semibold text-gray-800">
                           {trackingResult?.details?.barcode ||
                             (trackingResult?.details?.parcels &&

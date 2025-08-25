@@ -11,13 +11,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { Info, XCircle, RefreshCw, AlertCircle } from 'lucide-react';
 import {
-  Select,
-  SelectItem,
-  SelectValue,
-  SelectContent,
-  SelectTrigger,
-} from '@/components/ui/select';
-import {
   Form,
   FormItem,
   FormField,
@@ -30,7 +23,6 @@ import TrackingResultsDialog from './TrackingResultsDialog';
 import ApiErrorHandler, { type ApiErrorHandlerRef } from './helpers/apiError';
 
 const quickTrackSchema = z.object({
-  trackBy: z.string().min(1, 'Please select a tracking method'),
   searchValue: z.string().min(1, 'This field is required'),
 });
 
@@ -50,14 +42,10 @@ export default function QuickTrack() {
 
   const form = useForm<QuickTrackFormData>({
     resolver: zodResolver(quickTrackSchema),
-
     defaultValues: {
-      trackBy: '',
       searchValue: '',
     },
   });
-
-  const trackBy = form.watch('trackBy');
 
   const handleInputChange = useCallback(() => {
     if (errorState) {
@@ -148,8 +136,6 @@ export default function QuickTrack() {
           </p>
           <div className="animate-pulse space-y-4">
             <div className="h-10 bg-gray-200 rounded" />
-            <div className="h-10 bg-gray-200 rounded" />
-            <div className="h-10 bg-gray-200 rounded" />
           </div>
         </div>
       </div>
@@ -168,50 +154,15 @@ export default function QuickTrack() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="trackBy"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-900">Track By *</FormLabel>
-
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select tracking method" />
-                      </SelectTrigger>
-                    </FormControl>
-
-                    <SelectContent>
-                      <SelectItem value="order-tracking-id">Order Tracking ID</SelectItem>
-                      <SelectItem value="client-ref-no">Client Reference Number</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
               name="searchValue"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    {trackBy === 'order-tracking-id'
-                      ? 'Order Tracking ID'
-                      : trackBy === 'client-ref-no'
-                        ? 'Client Reference Number'
-                        : 'Search Value'}{' '}
-                    *
+                  <FormLabel className="text-sm font-medium text-gray-900">
+                    Order Tracking ID or Client Reference Number *
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder={
-                        trackBy === 'order-tracking-id'
-                          ? 'Enter Order Tracking ID'
-                          : trackBy === 'client-ref-no'
-                            ? 'Enter Client Reference Number'
-                            : 'Enter search value'
-                      }
+                      placeholder="Enter Order Tracking ID or Client Reference Number"
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);
